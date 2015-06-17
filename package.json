@@ -1,0 +1,30 @@
+{
+  "name": "animated-value-spaceship",
+  "version": "1.0.0",
+  "description": "A micro simulation for animating a value smoothly.... like a spaceship.",
+  "main": "index.js",
+  "license": "MIT",
+  "author": {
+    "name": "Tomasz Dysinski",
+    "email": "oz@bunnybones.com",
+    "url": "https://github.com/bunnybones1"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "animation",
+    "easing",
+    "spaceship"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bunnybones1/animated-value-spaceship.git"
+  },
+  "homepage": "https://github.com/bunnybones1/animated-value-spaceship",
+  "bugs": {
+    "url": "https://github.com/bunnybones1/animated-value-spaceship/issues"
+  }
+}
