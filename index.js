@@ -4,12 +4,13 @@ function SpaceshipValue() {
 	this.active = false;
 	this.velocity = 0;
 	this.thrust = 0.0005;
+	this.thrustDirection = 1;
 	this.cursor = 0;
 	this.update = noop;
 	this.destination = 0;
 	this.halfway = 0;
 	this.origin = 0;
-
+	this.iterationLimit = 200;
 }
 var recalculateLog;
 SpaceshipValue.prototype.recalculate = function() {
@@ -20,14 +21,18 @@ SpaceshipValue.prototype.recalculate = function() {
 		return;
 	}
 
+	if(this.deferredThrust !== undefined) {
+		this.thrust = this.deferredThrust;
+		this.deferredThrust = undefined;
+	}
 	var direction = this.velocity > 0 ? 1 : -1;
 	var velocityBackwards = this.velocity * -direction;
 	this.origin = this.cursor;
 	var iters = 0;
 	while(velocityBackwards > 0) {
 		iters++;
-		if(iters > 200) {
-			throw new Error('nope');
+		if(iters > this.iterationLimit) {
+			throw new Error('took too long to recalculate. Increase iterationLimit or thrust.');
 		}
 		velocityBackwards -= this.thrust * direction;
 		this.origin += velocityBackwards;
@@ -40,8 +45,10 @@ SpaceshipValue.prototype.recalculate = function() {
 SpaceshipValue.prototype.stepForward = function() {
 	if(this.cursor <= this.halfway) {
 		this.velocity += this.thrust;
+		this.thrustDirection = 1;
 	} else {
 		this.velocity -= this.thrust;
+		this.thrustDirection = -1;
 	}
 	this.cursor += this.velocity;
 
@@ -53,8 +60,10 @@ SpaceshipValue.prototype.stepForward = function() {
 SpaceshipValue.prototype.stepBackward = function() {
 	if(this.cursor >= this.halfway) {
 		this.velocity -= this.thrust;
+		this.thrustDirection = -1;
 	} else {
 		this.velocity += this.thrust;
+		this.thrustDirection = 1;
 	}
 	this.cursor += this.velocity;
 
@@ -79,8 +88,9 @@ SpaceshipValue.prototype.setThrust = function(thrust) {
 SpaceshipValue.prototype.setDestinationAndThrust = function(destination, thrust) {
 	this.active = true;
 	this.destination = destination;
-	this.thrust = thrust;
+	this.thrust *= 2;
 	this.recalculate();
+	this.deferredThrust = thrust;
 }
 
 module.exports = SpaceshipValue;

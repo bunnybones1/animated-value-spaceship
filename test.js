@@ -7,6 +7,10 @@ var valueRange = valueOut - valueIn;
 var labels = '';
 var ruler = '';
 
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
+
 var marks = [
 	[-1, '+'],
 	[0, '+'],
@@ -40,7 +44,9 @@ for (var i = 0; i <= total; i++) {
 	lastValue = value;
 }
 
-var cursorChar = '☞';
+var cursorChar = '•';
+var destinationChar = '☉';
+var filledChar = '◉';
 var tick = 0;
 function update() {
 	console.log('\033[2J');
@@ -56,9 +62,27 @@ function update() {
 		if(spaceshipValue.cursor > lastValue && spaceshipValue.cursor <= value) {
 			nextChar = cursorChar;
 		}
+		if(spaceshipValue.destination > lastValue && spaceshipValue.destination <= value) {
+			if(nextChar == cursorChar) {
+				nextChar = filledChar;
+			} else {
+				nextChar = destinationChar;
+			}
+		}
 		str += nextChar;
 		lastValue = value;
 	};
+	if(spaceshipValue.thrust !== 0) {
+		var index = str.indexOf(cursorChar);
+		// if(index === -1) index = str.indexOf(filledChar);
+		if(index !== -1) {
+			if(spaceshipValue.thrustDirection > 0) {
+				str = str.replaceAt(index, '☞');
+			} else if(spaceshipValue.thrustDirection < 0) {
+				str = str.replaceAt(index, '☜');
+			}
+		}
+	}
 	console.log(labels);
 	console.log(ruler);
 	console.log(str);
@@ -72,11 +96,11 @@ function update() {
 
 setTimeout(function() {
 	spaceshipValue.setDestinationAndThrust(0, 0.004);
-}, 1500);
+}, 800);
 
 setTimeout(function() {
 	spaceshipValue.setDestinationAndThrust(1, 0.001);
-}, 4500);
+}, 1300);
 
 setInterval(function() {
 	update();
